@@ -5,6 +5,7 @@ import org.tribot.api.Timing;
 import org.tribot.api.input.Mouse;
 import org.tribot.api.types.generic.Condition;
 import org.tribot.api2007.ChooseOption;
+import org.tribot.api2007.Game;
 import org.tribot.api2007.GameTab;
 import org.tribot.api2007.Inventory;
 import org.tribot.api2007.types.RSItem;
@@ -27,6 +28,7 @@ public class Dropping {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 7; j++) {
 
+                    if (Game.getUptext().contains("->")) Mouse.click(1);
                     if (items[4 * j + i] == null) continue;
                     if ((4 * j + i) >= numberOfItems) break;
 
