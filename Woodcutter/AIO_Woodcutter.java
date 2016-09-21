@@ -32,8 +32,8 @@ public class AIO_Woodcutter extends Script {
     public static String TREE_NAME;
     public static RSArea TREE_AREA;
 
-    public static RSArea BANK_AREA;
-    public static RSTile BANK_TILE;
+    public static RSArea BANK_AREA = new RSArea(new RSTile(0,0,0), new RSTile(0,0,0));
+    public static RSTile BANK_TILE = new RSTile(0,0,0);
 
     public static boolean bankLogs;
     public static boolean autoUpgradeAxe;
@@ -61,6 +61,11 @@ public class AIO_Woodcutter extends Script {
             Camera.setRotationMethod(Camera.ROTATION_METHOD.ONLY_MOUSE);
 
             Mouse.setSpeed(81);
+
+            if (Login.getLoginState() == Login.STATE.INGAME){
+                if (!Game.isRunOn())
+                    Options.setRunOn(true);
+            }
 
             while (true) {
 
@@ -213,7 +218,7 @@ public class AIO_Woodcutter extends Script {
 
                 //If some trees exist that fit the criteria
                 if (allValidTrees.length > 0) {
-                    if (allValidTrees[0].isClickable()) {
+                    if (allValidTrees[0].isOnScreen() && allValidTrees[0].isClickable()) {
                         if (allValidTrees[0].click("Chop down")) {
                             //If we clicked the chop down option, wait until we start chopping
                             Timing.waitCondition(new Condition() {
@@ -226,6 +231,11 @@ public class AIO_Woodcutter extends Script {
                         }
 
                     } else {
+                        if (Camera.getCameraAngle() < 100){
+                            Camera.setRotationMethod(Camera.ROTATION_METHOD.ONLY_KEYS);
+                            Camera.setCameraAngle(100);
+                            Camera.setRotationMethod(Camera.ROTATION_METHOD.ONLY_MOUSE);
+                        }
                         //Blind walk to the tree if not clickable
                         if (!Game.isRunOn() && Game.getRunEnergy() > 44)
                             Options.setRunOn(true);
@@ -419,12 +429,6 @@ public class AIO_Woodcutter extends Script {
                         while (true){
                             General.sleep(10000, 20000);
 
-                            if (Camera.getCameraAngle() < 100){
-                                Camera.setRotationMethod(Camera.ROTATION_METHOD.ONLY_KEYS);
-                                Camera.setCameraAngle(100);
-                                Camera.setRotationMethod(Camera.ROTATION_METHOD.ONLY_MOUSE);
-                            }
-
                             if (Skills.getActualLevel(Skills.SKILLS.WOODCUTTING) > currentWcLvl) {
                                 currentWcLvl = Skills.getActualLevel(Skills.SKILLS.WOODCUTTING);
                                 System.out.println("Gratz! You just leveled up to level " + currentWcLvl + "!");
@@ -447,6 +451,7 @@ public class AIO_Woodcutter extends Script {
     }
 
     private STATE updateState(){
+        if (Game.getUptext().contains("->")) Mouse.click(1);
         if (Inventory.isFull() || !RSAxe.gotAxe() || (BANK_AREA.contains(Player.getPosition()) && bankLogs)) {
             if (bankLogs || !RSAxe.gotAxe()) {
                 if (upgradingAxe)
