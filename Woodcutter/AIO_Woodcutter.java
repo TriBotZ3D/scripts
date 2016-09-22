@@ -451,7 +451,7 @@ public class AIO_Woodcutter extends Script {
     }
 
     private STATE updateState(){
-        if (Game.getUptext().contains("->")) Mouse.click(1);
+        if (Game.getUptext() != null && Game.getUptext().contains("->")) Mouse.click(1);
         if (Inventory.isFull() || !RSAxe.gotAxe() || (BANK_AREA.contains(Player.getPosition()) && bankLogs)) {
             if (bankLogs || !RSAxe.gotAxe()) {
                 if (upgradingAxe)
