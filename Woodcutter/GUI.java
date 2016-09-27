@@ -63,7 +63,7 @@ public class GUI extends javax.swing.JFrame {
         options_Panel = new javax.swing.JPanel();
         bankLogs_CheckBox = new javax.swing.JCheckBox();
         upgradeAxe_CheckBox = new javax.swing.JCheckBox();
-        hoverLastChopped_CheckBox = new javax.swing.JCheckBox();
+        lootNests_CheckBox = new javax.swing.JCheckBox();
 
         title_Lbl.setFont(new java.awt.Font("Segoe UI Light", 0, 24)); // NOI18N
         title_Lbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -338,7 +338,7 @@ public class GUI extends javax.swing.JFrame {
         treeName_Panel.setName("Tree Area"); // NOI18N
 
         treeName_Dropdown.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        treeName_Dropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Tree", "Achey", "Oak", "Willow", "Teak", "Maple", "Mahogany", "Arctic pine", "Yew", "Magic tree", "Redwood" }));
+        treeName_Dropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Tree", "Achey", "Oak", "Willow", "Teak", "Maple", "Mahogany", "Arctic pine", "Yew", "Magic", "Redwood" }));
 
         javax.swing.GroupLayout treeName_PanelLayout = new javax.swing.GroupLayout(treeName_Panel);
         treeName_Panel.setLayout(treeName_PanelLayout);
@@ -376,10 +376,10 @@ public class GUI extends javax.swing.JFrame {
         upgradeAxe_CheckBox.setText("Auto Upgrade Axe");
         upgradeAxe_CheckBox.setToolTipText("Will automatically get the best axe from your bank and use that");
 
-        hoverLastChopped_CheckBox.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        hoverLastChopped_CheckBox.setSelected(true);
-        hoverLastChopped_CheckBox.setText("Hover Last Chopped Tree");
-        hoverLastChopped_CheckBox.setToolTipText("Hover over the last tree chopped instead of the next valid tree");
+        lootNests_CheckBox.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
+        lootNests_CheckBox.setText("Loot Nests");
+        lootNests_CheckBox.setToolTipText("Not yet supported");
+        lootNests_CheckBox.setEnabled(false);
 
         javax.swing.GroupLayout options_PanelLayout = new javax.swing.GroupLayout(options_Panel);
         options_Panel.setLayout(options_PanelLayout);
@@ -388,11 +388,11 @@ public class GUI extends javax.swing.JFrame {
                         .addGroup(options_PanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(bankLogs_CheckBox)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
                                 .addComponent(upgradeAxe_CheckBox)
-                                .addGap(18, 18, 18)
-                                .addComponent(hoverLastChopped_CheckBox)
-                                .addContainerGap(13, Short.MAX_VALUE))
+                                .addGap(49, 49, 49)
+                                .addComponent(lootNests_CheckBox)
+                                .addGap(24, 24, 24))
         );
         options_PanelLayout.setVerticalGroup(
                 options_PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -401,7 +401,7 @@ public class GUI extends javax.swing.JFrame {
                                 .addGroup(options_PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(bankLogs_CheckBox)
                                         .addComponent(upgradeAxe_CheckBox)
-                                        .addComponent(hoverLastChopped_CheckBox))
+                                        .addComponent(lootNests_CheckBox))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -409,17 +409,15 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(start_Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(156, 156, 156))
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(title_Lbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(options_Panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(options_Panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(title_Lbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                                         .addComponent(treeArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -427,9 +425,13 @@ public class GUI extends javax.swing.JFrame {
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                                         .addComponent(bankArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                        .addComponent(treeName_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                                                .addGap(0, 0, Short.MAX_VALUE)))
-                                .addContainerGap())
+                                                                        .addComponent(treeName_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                .addGap(0, 0, Short.MAX_VALUE)))
+                                                .addContainerGap())))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(start_Btn, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(156, 156, 156))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -605,7 +607,7 @@ public class GUI extends javax.swing.JFrame {
     private String Separator = "#";
     private void loadData_BtnActionPerformed(java.awt.event.ActionEvent evt) {
 
-        JCheckBox[] allCheckBox = {bankLogs_CheckBox, hoverLastChopped_CheckBox, upgradeAxe_CheckBox};
+        JCheckBox[] allCheckBox = {bankLogs_CheckBox, lootNests_CheckBox, upgradeAxe_CheckBox};
         JTextField[] allTileInputs = {treeAreaTL_TxtBox, treeAreaBR_TxtBox, bankAreaTL_TxtBox, bankAreaBR_TxtBox, bankTile_TxtBox};
 
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -645,7 +647,7 @@ public class GUI extends javax.swing.JFrame {
     private void generateData_BtnActionPerformed(java.awt.event.ActionEvent evt) {
 
         String output = "";
-        JCheckBox[] allCheckBox = {bankLogs_CheckBox, hoverLastChopped_CheckBox, upgradeAxe_CheckBox};
+        JCheckBox[] allCheckBox = {bankLogs_CheckBox, lootNests_CheckBox, upgradeAxe_CheckBox};
         for (int i = 0; i < allCheckBox.length; i++){
             if (allCheckBox[i].isSelected())
                 output = output + "t" + Separator;
@@ -679,7 +681,7 @@ public class GUI extends javax.swing.JFrame {
 
             AIO_Woodcutter.TREE_NAME = treeName_Dropdown.getSelectedItem().toString();
             AIO_Woodcutter.autoUpgradeAxe = upgradeAxe_CheckBox.isSelected();
-            AIO_Woodcutter.hoverOverLastChopped = hoverLastChopped_CheckBox.isSelected();
+            AIO_Woodcutter.lootNests = lootNests_CheckBox.isSelected();
             AIO_Woodcutter.bankLogs = bankLogs_CheckBox.isSelected();
 
             setVisible(false);
@@ -699,6 +701,7 @@ public class GUI extends javax.swing.JFrame {
 
 
 
+
     // Variables declaration - do not modify
     private javax.swing.JButton bankAreaBR_Btn;
     private javax.swing.JTextField bankAreaBR_TxtBox;
@@ -710,9 +713,14 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextField bankTile_TxtBox;
     private javax.swing.JTextField dataString_TxtBox;
     private javax.swing.JButton generateData_Btn;
-    private javax.swing.JCheckBox hoverLastChopped_CheckBox;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField4;
     private javax.swing.JButton loadData_Btn;
     private javax.swing.JPanel loadTilles_Panel;
+    private javax.swing.JCheckBox lootNests_CheckBox;
     private javax.swing.JPanel options_Panel;
     private javax.swing.JButton start_Btn;
     private javax.swing.JLabel title_Lbl;
