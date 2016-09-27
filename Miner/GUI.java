@@ -62,7 +62,7 @@ public class GUI extends JFrame {
         options_Panel = new javax.swing.JPanel();
         bankOre_CheckBox = new javax.swing.JCheckBox();
         upgradePickaxe_CheckBox = new javax.swing.JCheckBox();
-        autoHop_CheckBox = new javax.swing.JCheckBox();
+        hoverLastMined_CheckBox = new javax.swing.JCheckBox();
 
         title_Lbl.setFont(new java.awt.Font("Segoe UI Light", 0, 24)); // NOI18N
         title_Lbl.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -359,7 +359,7 @@ public class GUI extends JFrame {
 
         options_Panel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Other Options"));
         options_Panel.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        options_Panel.setName("Options Panel"); // NOI18N
+        options_Panel.setName("Tree Area"); // NOI18N
 
         bankOre_CheckBox.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
         bankOre_CheckBox.setSelected(true);
@@ -376,9 +376,10 @@ public class GUI extends JFrame {
         upgradePickaxe_CheckBox.setText("Auto Upgrade Pickaxe");
         upgradePickaxe_CheckBox.setToolTipText("Will automatically get the best pickaxe from your bank and use that");
 
-        autoHop_CheckBox.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
-        autoHop_CheckBox.setText("Auto Hop Worlds");
-        autoHop_CheckBox.setToolTipText("Will hop worls if no rocks found");
+        hoverLastMined_CheckBox.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
+        hoverLastMined_CheckBox.setSelected(true);
+        hoverLastMined_CheckBox.setText("Hover Last Mined Rock");
+        hoverLastMined_CheckBox.setToolTipText("Hover over the last rock mined instead of the next valid rock");
 
         javax.swing.GroupLayout options_PanelLayout = new javax.swing.GroupLayout(options_Panel);
         options_Panel.setLayout(options_PanelLayout);
@@ -387,11 +388,11 @@ public class GUI extends JFrame {
                         .addGroup(options_PanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(bankOre_CheckBox)
-                                .addGap(41, 41, 41)
+                                .addGap(18, 18, 18)
                                 .addComponent(upgradePickaxe_CheckBox)
-                                .addGap(29, 29, 29)
-                                .addComponent(autoHop_CheckBox)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addComponent(hoverLastMined_CheckBox)
+                                .addContainerGap(13, Short.MAX_VALUE))
         );
         options_PanelLayout.setVerticalGroup(
                 options_PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -400,7 +401,7 @@ public class GUI extends JFrame {
                                 .addGroup(options_PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(bankOre_CheckBox)
                                         .addComponent(upgradePickaxe_CheckBox)
-                                        .addComponent(autoHop_CheckBox))
+                                        .addComponent(hoverLastMined_CheckBox))
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -415,16 +416,18 @@ public class GUI extends JFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(options_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(title_Lbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                        .addComponent(rockArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(loadTilles_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                        .addComponent(bankArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                        .addComponent(rockName_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                        .addComponent(options_Panel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(rockArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(loadTilles_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                        .addComponent(bankArea_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                        .addComponent(rockName_Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
@@ -602,7 +605,7 @@ public class GUI extends JFrame {
     private String Separator = "#";
     private void loadData_BtnActionPerformed(java.awt.event.ActionEvent evt) {
 
-        JCheckBox[] allCheckBox = {bankOre_CheckBox, autoHop_CheckBox, upgradePickaxe_CheckBox};
+        JCheckBox[] allCheckBox = {bankOre_CheckBox, hoverLastMined_CheckBox, upgradePickaxe_CheckBox};
         JTextField[] allTileInputs = {rockAreaTL_TxtBox, rockAreaBR_TxtBox, bankAreaTL_TxtBox, bankAreaBR_TxtBox, bankTile_TxtBox};
 
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -643,7 +646,7 @@ public class GUI extends JFrame {
     private void generateData_BtnActionPerformed(java.awt.event.ActionEvent evt) {
 
         String output = "";
-        JCheckBox[] allCheckBox = {bankOre_CheckBox, autoHop_CheckBox, upgradePickaxe_CheckBox};
+        JCheckBox[] allCheckBox = {bankOre_CheckBox, hoverLastMined_CheckBox, upgradePickaxe_CheckBox};
         for (int i = 0; i < allCheckBox.length; i++){
             if (allCheckBox[i].isSelected())
                 output = output + "t" + Separator;
@@ -681,7 +684,7 @@ public class GUI extends JFrame {
                 intRockIDs[i] = Integer.parseInt(stringRockIDs[i].trim());
 
             AIO_Miner.rockIDs = intRockIDs;
-            AIO_Miner.autoHop = autoHop_CheckBox.isSelected();
+            AIO_Miner.hoverOverLastMined = hoverLastMined_CheckBox.isSelected();
             AIO_Miner.autoUpgradePickaxe = upgradePickaxe_CheckBox.isSelected();
             AIO_Miner.bankOre = bankOre_CheckBox.isSelected();
 
@@ -704,7 +707,7 @@ public class GUI extends JFrame {
 
 
     // Variables declaration - do not modify
-    private javax.swing.JCheckBox autoHop_CheckBox;
+    private javax.swing.JCheckBox hoverLastMined_CheckBox;
     private javax.swing.JButton bankAreaBR_Btn;
     private javax.swing.JTextField bankAreaBR_TxtBox;
     private javax.swing.JButton bankAreaTL_Btn;

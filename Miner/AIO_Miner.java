@@ -2,6 +2,7 @@ package scripts.Miner;
 
 import org.tribot.api.General;
 import org.tribot.api.Timing;
+import org.tribot.api.input.Keyboard;
 import org.tribot.api.input.Mouse;
 import org.tribot.api.types.generic.Condition;
 import org.tribot.api.types.generic.Filter;
@@ -13,10 +14,7 @@ import org.tribot.api2007.types.RSObject;
 import org.tribot.api2007.types.RSTile;
 import org.tribot.script.Script;
 import org.tribot.script.ScriptManifest;
-import scripts.Utils.BankingUtils;
-import scripts.Utils.Dropping;
-import scripts.Utils.InventoryUtils;
-import scripts.Utils.Misc;
+import scripts.Utils.*;
 
 import java.util.ArrayList;
 
@@ -34,8 +32,8 @@ public class AIO_Miner extends Script {
     public static RSTile bankTile = new RSTile(0,0,0);
 
     public static boolean bankOre;
-    public static boolean autoHop;
     public static boolean autoUpgradePickaxe;
+    public static boolean hoverOverLastMined = true;
 
     private RSPickaxe[] allPickaxesOwned;
     private boolean upgradingPickaxe = false;
@@ -70,7 +68,7 @@ public class AIO_Miner extends Script {
                 switch (updateState()) {
 
                     case MINE_ROCKS:
-                        mineRocks(new int[] {199}, rockArea);
+                        mineRocks(rockIDs, rockArea);
                         break;
 
                     case BANKING:
@@ -135,7 +133,7 @@ public class AIO_Miner extends Script {
                 }else{
                     //Open bank screen if not already open, then wait for it to appear
                     if (Banking.openBank()){
-                        BankingUtils.waitForBankToOpen();
+                        SleepUtils.waitForBankToOpen();
                     }
                 }
             }else{
@@ -207,6 +205,7 @@ public class AIO_Miner extends Script {
         }
     }
 
+    private RSTile lastMinedTile = null;
     private void mineRocks(final int[] inRockIDs, final RSArea inRockArea){
 
         //Search for all trees that have the desired name and are within the area and have a 'Chop down' action
@@ -230,14 +229,26 @@ public class AIO_Miner extends Script {
                 if (allValidRocks.length > 0) {
                     if (allValidRocks[0].isOnScreen() && allValidRocks[0].isClickable()) {
                         if (allValidRocks[0].click("Mine")) {
-                            //If we clicked the Mine option, wait until we start chopping
+                            //If we clicked the Mine option, wait until we start mining
                             Timing.waitCondition(new Condition() {
                                 @Override
                                 public boolean active() {
-                                    General.sleep(50, 200);
-                                    return Player.getAnimation() != -1;
+                                    General.sleep(100, 300);
+                                    return Player.getAnimation() != -1 || Interfaces.get(233) != null;
                                 }
-                            }, General.random(5000, 8000));
+                            }, General.random(2000, 4000));
+                            if (Interfaces.get(233) != null) {
+                                General.sleep(600, 1500);
+                                Keyboard.pressKeys(Keyboard.getKeyCode(' '));
+                                General.sleep(400, 1200);
+                                Timing.waitCondition(new Condition() {
+                                    @Override
+                                    public boolean active() {
+                                        General.sleep(100, 300);
+                                        return Interfaces.get(233) == null;
+                                    }
+                                }, General.random(2000, 3000));
+                            }
                         }
 
                     } else {
@@ -282,13 +293,19 @@ public class AIO_Miner extends Script {
                     }, General.random(60000, 150000));
                 }
             } else {
-                if (InventoryUtils.freeInventSlots() == 1) {
+                if (InventoryUtils.freeInventSlots() == 1 && !bankOre) {
                     //If the next ore will fill the invent hover over the inventory
                     Mouse.moveBox(InventoryUtils.allInventSlots[0]);
                 } else {
-                    if (allValidRocks.length > 1 && allValidRocks[1].isOnScreen()) {
-                        //If there is another rock and it is on the screen, hover the mouse over it
-                        allValidRocks[1].hover();
+                    if (hoverOverLastMined && allValidRocks.length > 0){
+                        if (lastMinedTile != null)
+                                lastMinedTile.hover();
+                        lastMinedTile = allValidRocks[0].getPosition();
+                    }else {
+                        if (allValidRocks.length > 1 && allValidRocks[1].isOnScreen()) {
+                            //If there is another rock and it is on the screen, hover the mouse over it
+                            allValidRocks[1].hover();
+                        }
                     }
                 }
 
@@ -296,7 +313,7 @@ public class AIO_Miner extends Script {
                 Timing.waitCondition(new Condition() {
                     @Override
                     public boolean active() {
-                        General.sleep(100, 600);
+                        General.sleep(300,500);
                         //Change player animation from '-1' to specific mining animations
                         //Maybe add extra antiban here?
                         return Player.getAnimation() == -1 || Inventory.isFull();
@@ -321,7 +338,7 @@ public class AIO_Miner extends Script {
                             if (Banking.isBankScreenOpen()){
                                 //Close bank in order to equip the pickaxe
                                 if (Banking.close())
-                                    BankingUtils.waitForBankToClose();
+                                    SleepUtils.waitForBankToClose();
                             }else {
                                 //Bank is closed equip pickaxe
                                 bestPickaxe.Equip();
@@ -336,7 +353,7 @@ public class AIO_Miner extends Script {
                         if (Banking.isBankScreenOpen()){
                             //Close bank in order to unequip the pickaxe
                             if (Banking.close())
-                                BankingUtils.waitForBankToClose();
+                                SleepUtils.waitForBankToClose();
                         }else {
                             //Bank is closed, unequip pickaxe
                             currentPick.Unequip();
@@ -354,7 +371,7 @@ public class AIO_Miner extends Script {
                         }else{
                             //Open bank screen if not already open, then wait for it to appear
                             if (Banking.openBank())
-                                BankingUtils.waitForBankToOpen();
+                                SleepUtils.waitForBankToOpen();
                         }
                     }
                 }
@@ -370,7 +387,7 @@ public class AIO_Miner extends Script {
                     }, General.random(3000, 6000));
                 }else{
                     if (Banking.openBank())
-                        BankingUtils.waitForBankToOpen();
+                        SleepUtils.waitForBankToOpen();
                 }
             }
         }else{
