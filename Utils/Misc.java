@@ -25,4 +25,13 @@ public class Misc {
         return inArea.getAllTiles()[inArea.getAllTiles().length / 2];
     }
 
+    public static boolean arrayContainsString (String[] inArray, String inKey){
+        for (int i = 0; i < inArray.length; i++){
+            if (inArray[i].equals(inKey)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
