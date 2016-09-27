@@ -60,25 +60,7 @@ public class BankingUtils {
         return itemsToDeposit.length == Inventory.getAll().length;
     }
 
-    public static void waitForBankToOpen(){
-        Timing.waitCondition(new Condition() {
-            @Override
-            public boolean active() {
-                General.sleep(100, 300);
-                return Banking.isBankScreenOpen();
-            }
-        }, General.random(3000, 6000));
-    }
 
-    public static void waitForBankToClose(){
-        Timing.waitCondition(new Condition() {
-            @Override
-            public boolean active() {
-                General.sleep(100, 300);
-                return !Banking.isBankScreenOpen();
-            }
-        }, General.random(3000, 6000));
-    }
 
 
 }
