@@ -5,6 +5,7 @@ import org.tribot.api.Timing;
 import org.tribot.api.input.Mouse;
 import org.tribot.api.types.generic.Condition;
 import org.tribot.api.types.generic.Filter;
+import org.tribot.api2007.Equipment;
 import org.tribot.api2007.GameTab;
 import org.tribot.api2007.Inventory;
 import org.tribot.api2007.types.RSItem;
@@ -71,8 +72,16 @@ public class InventoryUtils {
         }
     }
 
+    public static boolean haveGotItem(String inName){
+        return Inventory.find(inName).length > 0 || Equipment.find(inName).length > 0;
+    }
+
     public static int freeInventSlots(){
        return 28 - Inventory.getAll().length;
+    }
+
+    public static boolean inventIsEmpty(){
+        return Inventory.getAll().length == 0;
     }
 
     public static boolean inventoryContainsItem(final RSItem inItem){
