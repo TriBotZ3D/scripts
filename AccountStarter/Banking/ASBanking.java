@@ -169,9 +169,54 @@ public class ASBanking {
                 Timing.waitCondition(new Condition() {
                     @Override
                     public boolean active() {
+                        General.sleep(100, 300);
                         return Inventory.getAll().length == 0 && Equipment.getItems().length == 0;
                     }
-                }, General.random(3000, 5000));
+                }, General.random(4000, 6000));
+            }else{
+                if (Banking.openBank())
+                    SleepUtils.waitForBankToOpen();
+            }
+        }else{
+            walkToBank();
+        }
+    }
+
+    public static void depositInventory(){
+        if (ASAreas.getBankArea().contains(Player.getPosition())){
+            if (Banking.isBankScreenOpen()){
+                if (Inventory.getAll().length > 0)
+                    Banking.depositAll();
+
+                Timing.waitCondition(new Condition() {
+                    @Override
+                    public boolean active() {
+                        General.sleep(100, 300);
+                        return Inventory.getAll().length == 0;
+                    }
+                }, General.random(4000, 6000));
+            }else{
+                if (Banking.openBank())
+                    SleepUtils.waitForBankToOpen();
+            }
+        }else{
+            walkToBank();
+        }
+    }
+
+    public static void depositEquipment(){
+        if (ASAreas.getBankArea().contains(Player.getPosition())){
+            if (Banking.isBankScreenOpen()){
+                if (Equipment.getItems().length > 0)
+                    Banking.depositEquipment();
+
+                Timing.waitCondition(new Condition() {
+                    @Override
+                    public boolean active() {
+                        General.sleep(100, 300);
+                        return Equipment.getItems().length == 0;
+                    }
+                }, General.random(4000, 6000));
             }else{
                 if (Banking.openBank())
                     SleepUtils.waitForBankToOpen();
