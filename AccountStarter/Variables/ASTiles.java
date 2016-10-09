@@ -7,8 +7,11 @@ import org.tribot.api2007.types.RSTile;
  */
 public class ASTiles {
 
-    private static RSTile lumbyStairsTile = new RSTile(3207, 3210);
+    private static RSTile lumbyStairsTile = new RSTile(3208, 3210);
     public static RSTile getLumbyStairsTile(){return lumbyStairsTile;}
+
+    private static RSTile centreCombatTile = new RSTile(3252, 3242);
+    public static RSTile getCentreCombatTile(){return centreCombatTile;}
 
     private static RSTile bankTile = new RSTile(3208, 3220, 2);
     public static RSTile getBankTile() {return bankTile;}
