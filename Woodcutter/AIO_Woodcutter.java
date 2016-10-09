@@ -267,7 +267,7 @@ public class AIO_Woodcutter extends Script {
                         @Override
                         public boolean active() {
                             General.sleep(800, 1200);
-                            return Objects.findNearest(100, Filters.Objects.nameEquals(inTreeName).combine(Filters.Objects.inArea(inTreeArea).combine(Filters.Objects.actionsContains("Chop down"), true), true)).length > 0;
+                            return Objects.findNearest(50, Filters.Objects.nameEquals(inTreeName).combine(Filters.Objects.inArea(inTreeArea).combine(Filters.Objects.actionsContains("Chop down"), true), true)).length > 0;
                         }
                     }, General.random(60000, 150000));
                 }
