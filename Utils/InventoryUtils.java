@@ -72,7 +72,7 @@ public class InventoryUtils {
         }
     }
 
-    public static boolean haveGotItem(String inName){
+    public static boolean itemEquippedOrInInvent(String inName){
         return Inventory.find(inName).length > 0 || Equipment.find(inName).length > 0;
     }
 
