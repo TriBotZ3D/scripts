@@ -16,7 +16,7 @@ public class ASAreas {
         return bankArea;
     }
 
-    private static RSArea combatArea = new RSArea(new RSTile(3239, 3253, 0), new RSTile(3266, 3217, 0));
+    private static RSArea combatArea = new RSArea(new RSTile(3239, 3253, 0), new RSTile(3266, 3222, 0));
     public static RSArea getCombatArea(){
         return combatArea;
     }
