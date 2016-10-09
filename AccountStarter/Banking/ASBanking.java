@@ -16,14 +16,15 @@ import scripts.Utils.SleepUtils;
  */
 public class ASBanking {
 
-    public static void walkToBank(){
-        switch (Player.getPosition().getPlane()){
+    public static void walkToBank() {
 
-            case 0: {
+        switch (Player.getPosition().getPlane()) {
+
+            case 0:
                 if (Player.getPosition().distanceTo(ASTiles.getLumbyStairsTile()) < 15) {
                     RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
                     if (Staircase.length > 0) {
-                        if (Staircase[0].isOnScreen() && Staircase[0].isClickable()) {
+                        if (Staircase[0].isOnScreen()) {
                             if (Staircase[0].click("Climb-up")) {
                                 Timing.waitCondition(new Condition() {
                                     @Override
@@ -31,31 +32,24 @@ public class ASBanking {
                                         General.sleep(100, 400);
                                         return Player.getPosition().getPlane() != 0;
                                     }
-                                }, General.random(4000, 6000));
+                                }, General.random(5000, 8000));
                             }
                         } else {
                             Walking.blindWalkTo(ASTiles.getLumbyStairsTile());
                             SleepUtils.waitToStopWalking();
                         }
-                    }else{
+                    } else {
                         System.out.println("Could not find a Staircase on the ground floor, going up.");
                         General.sleep(1000);
                     }
                 } else {
                     WebWalking.walkTo(ASTiles.getLumbyStairsTile());
-                    Timing.waitCondition(new Condition() {
-                        @Override
-                        public boolean active() {
-                            General.sleep(300, 600);
-                            return Player.getPosition().distanceTo(ASTiles.getLumbyStairsTile()) < 15;
-                        }
-                    }, General.random(4000, 6000));
+                    SleepUtils.waitToStopWalking();
                 }
-            }
+                break;
 
 
-
-            case 1: {
+            case 1:
                 RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
                 if (Staircase.length > 0) {
                     if (Staircase[0].isOnScreen() && Staircase[0].isClickable()) {
@@ -72,15 +66,14 @@ public class ASBanking {
                         Walking.blindWalkTo(Staircase[0].getPosition());
                         SleepUtils.waitToStopWalking();
                     }
-                }else{
+                } else {
                     System.out.println("Could not find a Staircase on the 1st floor, going up.");
                     General.sleep(1000);
                 }
-            }
+                break;
 
 
-
-            case 2: {
+            case 2:
                 if (!ASAreas.getBankArea().contains(Player.getPosition())) {
                     Walking.blindWalkTo(ASTiles.getBankTile());
                     Timing.waitCondition(new Condition() {
@@ -92,22 +85,29 @@ public class ASBanking {
                     }, General.random(10000, 15000));
                 }
                 //else at bank
-            }
+                break;
+
+            default:
+                General.sleep(1000);
+                System.out.println("Unknown floor when trying to walk to bank");
+                break;
 
         }
     }
 
+
     public static void leaveBank(){
+        RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
+
         switch (Player.getPosition().getPlane()){
 
-            case 2: {
-                RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
+            case 2:
                 if (Staircase.length > 0) {
                     if (ASAreas.getBankArea().contains(Player.getPosition())){
                         Walking.blindWalkTo(new RSTile(3205, 3209));
                         SleepUtils.waitToStopWalking();
                     }else {
-                        if (Staircase[0].isOnScreen() && Staircase[0].isClickable()) {
+                        if (Staircase[0].isOnScreen()) {
                             if (Staircase[0].click("Climb-down")) {
                                 Timing.waitCondition(new Condition() {
                                     @Override
@@ -126,12 +126,11 @@ public class ASBanking {
                     System.out.println("Could not find a Staircase on the 2nd floor, going down.");
                     General.sleep(1000);
                 }
-            }
+            break;
 
-            case 1 :{
-                RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
+            case 1 :
                 if (Staircase.length > 0) {
-                    if (Staircase[0].isOnScreen() && Staircase[0].isClickable()) {
+                    if (Staircase[0].isOnScreen()) {
                         if (Staircase[0].click("Climb-down")) {
                             Timing.waitCondition(new Condition() {
                                 @Override
@@ -149,7 +148,7 @@ public class ASBanking {
                     System.out.println("Could not find a Staircase on the 1st floor, going down");
                     General.sleep(1000);
                 }
-            }
+            break;
 
             case 0:
                 System.out.println("We've left the bank but we're still trying to leave?");
