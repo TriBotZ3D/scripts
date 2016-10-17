@@ -5,93 +5,94 @@ import org.tribot.api.Timing;
 import org.tribot.api.input.Keyboard;
 import org.tribot.api.input.Mouse;
 import org.tribot.api.types.generic.Condition;
-import org.tribot.api.types.generic.Filter;
 import org.tribot.api2007.*;
 import org.tribot.api2007.ext.Filters;
 import org.tribot.api2007.types.RSArea;
 import org.tribot.api2007.types.RSItem;
 import org.tribot.api2007.types.RSObject;
+import org.tribot.script.interfaces.MessageListening07;
 import scripts.AccountStarter.Banking.ASBanking;
 import scripts.AccountStarter.Firemaking.ASFiremaking;
 import scripts.AccountStarter.Variables.ASAreas;
 import scripts.AccountStarter.Variables.ASVariables;
-import scripts.Utils.Dropping;
-import scripts.Utils.InventoryUtils;
-import scripts.Utils.Misc;
-import scripts.Utils.SleepUtils;
+import scripts.Utils.*;
 
 /**
  * Created by James on 30/09/2016.
+ *
+ * Things to do:
+ * -FINISHED
  */
-public class ASWoodcutting{
 
-    private enum STATE{
-        STARTING, CHOP_TREES, FIREMAKING, BANKING, WALKING_TO_BANK, WALKING_TO_TREE_AREA, LOST
+public class ASWoodcutting implements MessageListening07{
+
+    //region VARIABLES
+
+    private RSArea bestTreeArea;
+    private String bestTreeName;
+    private boolean runScript = true;
+
+    private int targetWCLevel;
+    private int currentWCLevel;
+
+    private int targetFMLevel;
+    private int currentFMLevel;
+
+    //endregion
+
+    //region MAIN RUN METHOD & CONSTRUCTORS
+
+    public ASWoodcutting(int inTargetWCLevel, int inTargetFMLevel){
+        targetWCLevel = inTargetWCLevel;
+        currentWCLevel = Skills.getCurrentLevel(Skills.SKILLS.WOODCUTTING);
+
+        targetFMLevel = inTargetFMLevel;
+        currentFMLevel = Skills.getCurrentLevel(Skills.SKILLS.FIREMAKING);
     }
 
-    private static STATE currentState = STATE.STARTING;
+    public void run(){
 
-    private static STATE getInitialState(){
-        if (Skills.getActualLevel(Skills.SKILLS.WOODCUTTING) >= 15){
-            bestTreeName = "Oak";
-            bestTreeArea = ASAreas.getOakTreesArea();
-        }else{
-            bestTreeName = "Tree";
-            bestTreeArea = ASAreas.getNormalTreesArea();
-        }
+        while (runScript) {
+            switch (currentState) {
 
-        if (ASAreas.getNormalTreesArea().contains(Player.getPosition()) || ASAreas.getOakTreesArea().contains(Player.getPosition()))
-            return STATE.CHOP_TREES;
-        else if (ASAreas.getBankArea().contains(Player.getPosition()))
-            return STATE.BANKING;
-        else
-            return STATE.LOST;
-    }
+                case STARTING:
+                    currentState = getInitialState();
+                    break;
 
-    private static RSArea bestTreeArea;
-    private static String bestTreeName;
-    public static void main(){
+                case CHOP_TREES:
+                    handleChopping();
+                    break;
 
-        switch (currentState) {
+                case FIREMAKING:
+                    handleFiremaking();
+                    break;
 
-            case STARTING:
-                currentState = getInitialState();
-                break;
+                case BANKING:
+                    handleBank();
+                    break;
 
-            case CHOP_TREES:
-                handleChopping();
-                break;
+                case WALKING_TO_BANK:
+                    walkToBank();
+                    break;
 
-            case FIREMAKING:
-                handleFiremaking();
-                break;
+                case WALKING_TO_TREE_AREA:
+                    walkToTreeArea(bestTreeArea);
+                    break;
 
-            case BANKING:
-                handleBank();
-                break;
-
-            case WALKING_TO_BANK:
-                walkToBank();
-                break;
-
-            case WALKING_TO_TREE_AREA:
-                walkToTreeArea(bestTreeArea);
-                break;
-
-            case LOST:
-                handleLost();
-                break;
+                case LOST:
+                    handleLost();
+                    break;
+            }
         }
     }
 
-    private static void handleChopping(){
-        if (Skills.getActualLevel(Skills.SKILLS.WOODCUTTING) >= 15){
-            bestTreeName = "Oak";
-            bestTreeArea = ASAreas.getOakTreesArea();
-        }else{
-            bestTreeName = "Tree";
-            bestTreeArea = ASAreas.getNormalTreesArea();
-        }
+    //endregion
+
+
+
+    //region HANDLE CHOPPING
+
+    private void handleChopping(){
         if (!Inventory.isFull()){
             if (onlyGotAxeAndLogs()){
                 if (axeIsEquipped()){
@@ -106,79 +107,7 @@ public class ASWoodcutting{
             currentState = STATE.FIREMAKING;
     }
 
-    private static void handleFiremaking(){
-        RSItem[] allLogs = Inventory.find(Filters.Items.nameContains("logs"));
-        if (allLogs.length > 0){
-            if (allLogs[0].getDefinition().getName().equals("Oak logs")){
-                if (Skills.getActualLevel(Skills.SKILLS.FIREMAKING) >= 15){
-                    ASFiremaking.lightLogs("Oak logs");
-                }else{
-                    if (allLogs[0].click("Drop")){
-                        SleepUtils.waitForInventChange();
-                    }
-                }
-            }else if (allLogs[0].getDefinition().getName().equals("Logs")){
-                ASFiremaking.lightLogs("Logs");
-            }else{
-                if (allLogs[0].click("Drop")){
-                    SleepUtils.waitForInventChange();
-                }
-            }
-        }else{
-            currentState = STATE.CHOP_TREES;
-        }
-    }
-
-    private static void handleLost() {
-        if (onlyGotAxeAndLogs())
-            currentState = STATE.WALKING_TO_TREE_AREA;
-        else
-            currentState = STATE.WALKING_TO_BANK;
-    }
-
-    private static void walkToTreeArea(RSArea inArea) {
-        if (!inArea.contains(Player.getPosition())){
-            if (Player.getPosition().getPlane() == 0){
-                WebWalking.walkTo(Misc.getCentreTile(inArea));
-                SleepUtils.waitToStopWalking();
-            }else{
-                ASBanking.leaveBank();
-            }
-        }else{
-            currentState = STATE.CHOP_TREES;
-        }
-    }
-
-    private static void walkToBank() {
-        if (ASAreas.getBankArea().contains(Player.getPosition()))
-            currentState = STATE.BANKING;
-        else
-            ASBanking.walkToBank();
-    }
-
-    private static void handleBank() {
-        if (axeIsEquipped() && onlyGotAxe()) {
-            currentState = STATE.WALKING_TO_TREE_AREA;
-        } else {
-            if (onlyGotAxe()){
-                if (!axeIsEquipped())
-                    equipAxe();
-            }else{
-                if (InventoryUtils.inventIsEmpty()){
-                    if (Equipment.getItems().length == 0){
-                        if (!InventoryUtils.itemEquippedOrInInvent(ASVariables.getAxeName()))
-                            ASBanking.withdraw(ASVariables.getAxeName(), 1);
-                    }else{
-                        ASBanking.depositEquipment();
-                    }
-                }else{
-                    ASBanking.depositInventory();
-                }
-            }
-        }
-    }
-
-    private static void chopTrees(final String inTreeName, final RSArea inTreeArea){
+    private void chopTrees(final String inTreeName, final RSArea inTreeArea){
 
 
         //Search for all trees that have the desired name and are within the area and have a 'Chop down' action
@@ -198,18 +127,6 @@ public class ASWoodcutting{
                                 return Player.getAnimation() != -1 || Interfaces.get(233) != null;
                             }
                         }, General.random(5000, 8000));
-                        if (Interfaces.get(233) != null) {
-                            General.sleep(600, 1500);
-                            Keyboard.pressKeys(Keyboard.getKeyCode(' '));
-                            General.sleep(400, 1200);
-                            Timing.waitCondition(new Condition() {
-                                @Override
-                                public boolean active() {
-                                    General.sleep(100, 300);
-                                    return Interfaces.get(233) == null;
-                                }
-                            }, General.random(2000, 3000));
-                        }
                     }
 
                 } else {
@@ -265,38 +182,107 @@ public class ASWoodcutting{
         }
     }
 
+    //endregion
 
-    private static boolean onlyGotAxeAndLogs(){
+    //region HANDLE FIREMAKING
 
-        if (!InventoryUtils.itemEquippedOrInInvent(ASVariables.getAxeName()))
-            return false;
-
-        RSItem[] nonValidInventItems = Inventory.find(new Filter<RSItem>() {
-            @Override
-            public boolean accept(RSItem rsItem) {
-                return !rsItem.getDefinition().getName().toUpperCase().contains("LOGS") && !rsItem.getDefinition().getName().equals(ASVariables.getAxeName());
+    private void handleFiremaking(){
+        RSItem[] allLogs = Inventory.find(Filters.Items.nameContains("logs"));
+        if (allLogs.length > 0){
+            if (allLogs[0].getDefinition().getName().equals("Oak logs")){
+                if (currentFMLevel >= 15){
+                    ASFiremaking.lightLogs("Oak logs");
+                }else{
+                    if (allLogs[0].click("Drop")){
+                        InventoryUtils.waitForInventChange();
+                    }
+                }
+            }else if (allLogs[0].getDefinition().getName().equals("Logs")){
+                ASFiremaking.lightLogs("Logs");
+            }else{
+                if (allLogs[0].click("Drop")){
+                    InventoryUtils.waitForInventChange();
+                }
             }
-        });
-        return nonValidInventItems.length == 0;
+        }else{
+            currentState = STATE.CHOP_TREES;
+        }
     }
 
-    private static boolean onlyGotAxe(){
+    //endregion
 
-        if (!InventoryUtils.itemEquippedOrInInvent(ASVariables.getAxeName()))
-            return false;
+    //region HANDLE BANKING
 
-        RSItem[] nonAxeInventItems = Inventory.find(Filters.Items.nameNotEquals(ASVariables.getAxeName()));
-        if (nonAxeInventItems.length > 0)
-            return false;
+    private void handleBank() {
+        if (axeIsEquipped() && onlyGotAxe()) {
+            currentState = STATE.WALKING_TO_TREE_AREA;
+        } else {
+            if (onlyGotAxe()){
+                if (!axeIsEquipped())
+                    equipAxe();
+            }else{
+                if (InventoryUtils.inventIsEmpty()){
+                    if (Equipment.getItems().length == 0){
+                        if (!InventoryUtils.itemEquippedOrInInvent(ASVariables.getAxeName()))
+                            ASBanking.withdraw(ASVariables.getAxeName(), 1);
+                        if (Inventory.find("Tinderbox").length == 0)
+                            ASBanking.withdraw("Tinderbox", 1);
+                    }else{
+                        ASBanking.depositEquipment();
+                    }
+                }else{
+                    ASBanking.depositInventory();
+                }
+            }
+        }
 
-        RSItem[] nonAxeEquipmentItems = Equipment.find(Filters.Items.nameNotEquals(ASVariables.getAxeName()));
-        if (nonAxeEquipmentItems.length > 0)
-            return false;
-
-        return true;
     }
 
-    private static void equipAxe(){
+    //endregion
+
+    //region HANDLE WALKING
+
+    private void handleLost() {
+        if (onlyGotAxeAndLogs())
+            currentState = STATE.WALKING_TO_TREE_AREA;
+        else
+            currentState = STATE.WALKING_TO_BANK;
+    }
+
+    private void walkToTreeArea(RSArea inArea) {
+        if (!inArea.contains(Player.getPosition())){
+            if (Player.getPosition().getPlane() == 0){
+                WebWalking.walkTo(MiscUtils.getCentreTile(inArea));
+                WalkingUtils.waitToStopWalking();
+            }else{
+                ASBanking.leaveBank();
+            }
+        }else{
+            currentState = STATE.CHOP_TREES;
+        }
+    }
+
+    private void walkToBank() {
+        if (ASAreas.getBankArea().contains(Player.getPosition()))
+            currentState = STATE.BANKING;
+        else
+            ASBanking.walkToBank();
+    }
+
+    //endregion
+
+
+    //region MISC METHODS
+
+    private boolean onlyGotAxeAndLogs(){
+        return InventoryUtils.onlyGotItems(new String[]{"Logs", "Oak logs", ASVariables.getAxeName(), "Tinderbox"});
+    }
+
+    private boolean onlyGotAxe(){
+       return InventoryUtils.onlyGotItems(new String[]{ASVariables.getAxeName()});
+    }
+
+    private void equipAxe(){
         RSItem[] Axe = Inventory.find(ASVariables.getAxeName());
 
         if (!Banking.isBankScreenOpen()){
@@ -313,13 +299,96 @@ public class ASWoodcutting{
             }
         }else{
             if (Banking.close())
-                SleepUtils.waitForBankToClose();
+                BankingUtils.waitForBankToClose();
         }
     }
 
-    private static boolean axeIsEquipped(){
+    private boolean axeIsEquipped(){
         return Equipment.find(ASVariables.getAxeName()).length > 0;
     }
 
+    //endregion
+
+    //region STATE HANDLING
+
+    private enum STATE{
+        STARTING, CHOP_TREES, FIREMAKING, BANKING, WALKING_TO_BANK, WALKING_TO_TREE_AREA, LOST
+    }
+
+    private STATE currentState = STATE.STARTING;
+    private STATE getInitialState(){
+        if (currentWCLevel >= 15 && currentFMLevel > 15){
+            bestTreeName = "Oak";
+            bestTreeArea = ASAreas.getOakTreesArea();
+        }else{
+            bestTreeName = "Tree";
+            bestTreeArea = ASAreas.getNormalTreesArea();
+        }
+
+        if (ASAreas.getNormalTreesArea().contains(Player.getPosition()) || ASAreas.getOakTreesArea().contains(Player.getPosition()))
+            return STATE.CHOP_TREES;
+        else if (ASAreas.getBankArea().contains(Player.getPosition()))
+            return STATE.BANKING;
+        else
+            return STATE.LOST;
+    }
+
+    //endregion
+
+
+    //region MESSAGE LISTENING
+
+    @Override
+    public void serverMessageReceived(String s) {
+        if (s.contains("Congratulations, you just advanced a")){
+            ChatUtils.waitForChatInterface();
+            while(ChatUtils.interfaceCoveringChat()){
+                Keyboard.pressKeys(Keyboard.getKeyCode(' '));
+                General.sleep(800, 1500);
+            }
+
+            currentFMLevel = Skills.getCurrentLevel(Skills.SKILLS.FIREMAKING);
+            currentWCLevel = Skills.getCurrentLevel(Skills.SKILLS.WOODCUTTING);
+
+            if (currentFMLevel >= targetFMLevel && currentWCLevel >= targetWCLevel)
+                runScript = false;
+
+            if (currentWCLevel >= 15 && currentFMLevel > 15){
+                bestTreeName = "Oak";
+                bestTreeArea = ASAreas.getOakTreesArea();
+            }else{
+                bestTreeName = "Tree";
+                bestTreeArea = ASAreas.getNormalTreesArea();
+            }
+
+        }
+    }
+
+    @Override
+    public void playerMessageReceived(String s, String s1) {
+
+    }
+
+    @Override
+    public void duelRequestReceived(String s, String s1) {
+
+    }
+
+    @Override
+    public void clanMessageReceived(String s, String s1) {
+
+    }
+
+    @Override
+    public void tradeRequestReceived(String s) {
+
+    }
+
+    @Override
+    public void personalMessageReceived(String s, String s1) {
+
+    }
+
+    //endregion
 
 }
