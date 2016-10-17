@@ -61,6 +61,28 @@ public class BankingUtils {
     }
 
 
+    //region CONDITIONAL SLEEPING
 
+    public static void waitForBankToOpen(){
+        Timing.waitCondition(new Condition() {
+            @Override
+            public boolean active() {
+                General.sleep(100, 300);
+                return Banking.isBankScreenOpen();
+            }
+        }, General.random(4000, 6000));
+    }
+
+    public static void waitForBankToClose(){
+        Timing.waitCondition(new Condition() {
+            @Override
+            public boolean active() {
+                General.sleep(100, 300);
+                return !Banking.isBankScreenOpen();
+            }
+        }, General.random(4000, 6000));
+    }
+
+    //endregion
 
 }
