@@ -6,6 +6,7 @@ import org.tribot.api.input.Mouse;
 import org.tribot.api.types.generic.Condition;
 import org.tribot.api.types.generic.Filter;
 import org.tribot.api2007.Equipment;
+import org.tribot.api2007.Game;
 import org.tribot.api2007.GameTab;
 import org.tribot.api2007.Inventory;
 import org.tribot.api2007.types.RSItem;
@@ -65,7 +66,7 @@ public class InventoryUtils {
                     General.sleep(100, 400);
 
                     //And release it
-                    Mouse.sendRelease(Misc.generateRandomPoint(allInventSlots[inIndex]), 1);
+                    Mouse.sendRelease(MiscUtils.getRandPointInRectangle(allInventSlots[inIndex]), 1);
                     General.sleep(150, 500);
                 }
             }
@@ -76,6 +77,30 @@ public class InventoryUtils {
         return Inventory.find(inName).length > 0 || Equipment.find(inName).length > 0;
     }
 
+    public static boolean onlyGotItems(final String[] inItemNames){
+        int invalidInventItemsCount = Inventory.find(new Filter<RSItem>() {
+            @Override
+            public boolean accept(RSItem rsItem) {
+                return !MiscUtils.arrayContainsString(inItemNames, rsItem.getDefinition().getName());
+            }
+        }).length;
+
+        if (invalidInventItemsCount > 0)
+            return false;
+
+        int invalidEquipItemsCount = Equipment.find(new Filter<RSItem>() {
+            @Override
+            public boolean accept(RSItem rsItem) {
+                return !MiscUtils.arrayContainsString(inItemNames, rsItem.getDefinition().getName());
+            }
+        }).length;
+
+        if (invalidEquipItemsCount > 0)
+            return false;
+
+        return true;
+    }
+
     public static int freeInventSlots(){
        return 28 - Inventory.getAll().length;
     }
@@ -84,13 +109,39 @@ public class InventoryUtils {
         return Inventory.getAll().length == 0;
     }
 
-    public static boolean inventoryContainsItem(final RSItem inItem){
-        return Inventory.find(new Filter<RSItem>() {
+    //region CONDITIONAL SLEEPING
+
+    public static void waitForEmptyInvent(){
+        Timing.waitCondition(new Condition() {
             @Override
-            public boolean accept(RSItem rsItem) {
-                return rsItem.equals(inItem);
+            public boolean active() {
+                General.sleep(100, 300);
+                return InventoryUtils.inventIsEmpty();
             }
-        }).length > 0;
+        }, General.random(3000, 5000));
     }
+
+    public static void waitForItemSelect(){
+        Timing.waitCondition(new Condition() {
+            @Override
+            public boolean active() {
+                General.sleep(100, 300);
+                return Game.isUptext("->");
+            }
+        }, General.random(2000, 4000));
+    }
+
+    public static void waitForInventChange(){
+        final int inventCount = Inventory.getAll().length;
+        Timing.waitCondition(new Condition() {
+            @Override
+            public boolean active() {
+                General.sleep(100, 300);
+                return inventCount != Inventory.getAll().length;
+            }
+        }, General.random(2000, 3000));
+    }
+
+    //endregion
 
 }
