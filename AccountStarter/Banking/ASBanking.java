@@ -9,12 +9,15 @@ import org.tribot.api2007.types.RSObject;
 import org.tribot.api2007.types.RSTile;
 import scripts.AccountStarter.Variables.ASAreas;
 import scripts.AccountStarter.Variables.ASTiles;
-import scripts.Utils.SleepUtils;
+import scripts.Utils.BankingUtils;
+import scripts.Utils.WalkingUtils;
 
 /**
  * Created by James on 23/09/2016.
  */
 public class ASBanking {
+
+    //region BANK WALKING
 
     public static void walkToBank() {
 
@@ -36,7 +39,7 @@ public class ASBanking {
                             }
                         } else {
                             Walking.blindWalkTo(ASTiles.getLumbyStairsTile());
-                            SleepUtils.waitToStopWalking();
+                            WalkingUtils.waitToStopWalking();
                         }
                     } else {
                         System.out.println("Could not find a Staircase on the ground floor, going up.");
@@ -44,7 +47,7 @@ public class ASBanking {
                     }
                 } else {
                     WebWalking.walkTo(ASTiles.getLumbyStairsTile());
-                    SleepUtils.waitToStopWalking();
+                    WalkingUtils.waitToStopWalking();
                 }
                 break;
 
@@ -64,7 +67,7 @@ public class ASBanking {
                         }
                     } else {
                         Walking.blindWalkTo(Staircase[0].getPosition());
-                        SleepUtils.waitToStopWalking();
+                        WalkingUtils.waitToStopWalking();
                     }
                 } else {
                     System.out.println("Could not find a Staircase on the 1st floor, going up.");
@@ -95,7 +98,6 @@ public class ASBanking {
         }
     }
 
-
     public static void leaveBank(){
         RSObject[] Staircase = Objects.findNearest(20, Filters.Objects.nameEquals("Staircase"));
 
@@ -105,7 +107,7 @@ public class ASBanking {
                 if (Staircase.length > 0) {
                     if (ASAreas.getBankArea().contains(Player.getPosition())){
                         Walking.blindWalkTo(new RSTile(3205, 3209));
-                        SleepUtils.waitToStopWalking();
+                        WalkingUtils.waitToStopWalking();
                     }else {
                         if (Staircase[0].isOnScreen()) {
                             if (Staircase[0].click("Climb-down")) {
@@ -119,7 +121,7 @@ public class ASBanking {
                             }
                         } else {
                             Walking.blindWalkTo(new RSTile(3205, 3209));
-                            SleepUtils.waitToStopWalking();
+                            WalkingUtils.waitToStopWalking();
                         }
                     }
                 }else{
@@ -142,7 +144,7 @@ public class ASBanking {
                         }
                     } else {
                         Walking.blindWalkTo(Staircase[0].getPosition());
-                        SleepUtils.waitToStopWalking();
+                        WalkingUtils.waitToStopWalking();
                     }
                 }else{
                     System.out.println("Could not find a Staircase on the 1st floor, going down");
@@ -155,6 +157,10 @@ public class ASBanking {
                 break;
         }
     }
+
+    //endregion
+
+    //region DEPOSIT METHODS
 
     public static void depositEverything(){
         if (ASAreas.getBankArea().contains(Player.getPosition())){
@@ -174,7 +180,7 @@ public class ASBanking {
                 }, General.random(4000, 6000));
             }else{
                 if (Banking.openBank())
-                    SleepUtils.waitForBankToOpen();
+                    BankingUtils.waitForBankToOpen();
             }
         }else{
             walkToBank();
@@ -196,7 +202,7 @@ public class ASBanking {
                 }, General.random(4000, 6000));
             }else{
                 if (Banking.openBank())
-                    SleepUtils.waitForBankToOpen();
+                    BankingUtils.waitForBankToOpen();
             }
         }else{
             walkToBank();
@@ -218,12 +224,16 @@ public class ASBanking {
                 }, General.random(4000, 6000));
             }else{
                 if (Banking.openBank())
-                    SleepUtils.waitForBankToOpen();
+                    BankingUtils.waitForBankToOpen();
             }
         }else{
             walkToBank();
         }
     }
+
+    //endregion
+
+    //region WITHDRAW METHODS
 
     public static void withdraw(final String itemName, final int itemCount){
         if (ASAreas.getBankArea().contains(Player.getPosition())){
@@ -233,6 +243,7 @@ public class ASBanking {
                         Timing.waitCondition(new Condition() {
                             @Override
                             public boolean active() {
+                                General.sleep(100, 300);
                                 return Inventory.getCount(itemName) >= itemCount;
                             }
                         }, General.random(3000, 5000));
@@ -243,10 +254,13 @@ public class ASBanking {
                 }
             }else{
                 if (Banking.openBank())
-                    SleepUtils.waitForBankToOpen();
+                    BankingUtils.waitForBankToOpen();
             }
         }else{
             walkToBank();
         }
     }
+
+    //endregion
+
 }
