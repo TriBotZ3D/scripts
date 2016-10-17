@@ -133,14 +133,14 @@ public class AIO_Miner extends Script {
                 }else{
                     //Open bank screen if not already open, then wait for it to appear
                     if (Banking.openBank()){
-                        SleepUtils.waitForBankToOpen();
+                        BankingUtils.waitForBankToOpen();
                     }
                 }
             }else{
                 //Walk back to rocks
                 if (!Game.isRunOn() && Game.getRunEnergy() > 44)
                     Options.setRunOn(true);
-                PathFinding.aStarWalk(Misc.getCentreTile(inRockArea));
+                PathFinding.aStarWalk(MiscUtils.getCentreTile(inRockArea));
                 Timing.waitCondition(new Condition() {
                     @Override
                     public boolean active() {
@@ -181,7 +181,7 @@ public class AIO_Miner extends Script {
         System.out.println("Oh no, we seem to be a little lost. Lets try and find out way back.");
         if (!Game.isRunOn() && Game.getRunEnergy() > 44)
             Options.setRunOn(true);
-        PathFinding.aStarWalk(Misc.getCentreTile(inRocksArea));
+        PathFinding.aStarWalk(MiscUtils.getCentreTile(inRocksArea));
         Timing.waitCondition(new Condition() {
             @Override
             public boolean active() {
@@ -201,7 +201,7 @@ public class AIO_Miner extends Script {
             System.out.println("Do I have to do everything around here...");
             InventoryUtils.moveItemToIndex(pickaxeInInvent[0], 27);
         }else {
-            Dropping.fastDrop(27);
+            DroppingUtils.fastDrop(27);
         }
     }
 
@@ -338,7 +338,7 @@ public class AIO_Miner extends Script {
                             if (Banking.isBankScreenOpen()){
                                 //Close bank in order to equip the pickaxe
                                 if (Banking.close())
-                                    SleepUtils.waitForBankToClose();
+                                    BankingUtils.waitForBankToClose();
                             }else {
                                 //Bank is closed equip pickaxe
                                 bestPickaxe.Equip();
@@ -353,7 +353,7 @@ public class AIO_Miner extends Script {
                         if (Banking.isBankScreenOpen()){
                             //Close bank in order to unequip the pickaxe
                             if (Banking.close())
-                                SleepUtils.waitForBankToClose();
+                                BankingUtils.waitForBankToClose();
                         }else {
                             //Bank is closed, unequip pickaxe
                             currentPick.Unequip();
@@ -371,7 +371,7 @@ public class AIO_Miner extends Script {
                         }else{
                             //Open bank screen if not already open, then wait for it to appear
                             if (Banking.openBank())
-                                SleepUtils.waitForBankToOpen();
+                                BankingUtils.waitForBankToOpen();
                         }
                     }
                 }
@@ -387,7 +387,7 @@ public class AIO_Miner extends Script {
                     }, General.random(3000, 6000));
                 }else{
                     if (Banking.openBank())
-                        SleepUtils.waitForBankToOpen();
+                        BankingUtils.waitForBankToOpen();
                 }
             }
         }else{
