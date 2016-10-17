@@ -7,16 +7,17 @@ import org.tribot.api.types.generic.Condition;
 import org.tribot.api2007.*;
 import org.tribot.api2007.types.RSItem;
 import org.tribot.api2007.types.RSObject;
-import org.tribot.api2007.types.RSPlayer;
 import org.tribot.api2007.types.RSTile;
-import scripts.Utils.SleepUtils;
-
-import java.util.Timer;
+import scripts.Utils.InventoryUtils;
+import scripts.Utils.MiscSleepUtils;
+import scripts.Utils.WalkingUtils;
 
 /**
  * Created by James on 07/10/2016.
  */
 public class ASFiremaking {
+
+    //region MAIN FIREMAKING
 
     public static void lightLogs(String inLogName){
         while (true) {
@@ -29,7 +30,7 @@ public class ASFiremaking {
                         if (Logs.length > 0) {
                             if (Game.isUptext("Tinderbox -> Oak logs") || Game.isUptext("Tinderbox -> Logs")) {
                                 Mouse.click(1);
-                                SleepUtils.waitUntilNotIdle();
+                                MiscSleepUtils.waitUntilNotIdle();
                                 if (Logs.length > 1)
                                     Tinderbox[0].hover();
                             } else {
@@ -50,7 +51,7 @@ public class ASFiremaking {
                     } else {
                         if (Tinderbox.length > 0) {
                             if (Tinderbox[0].click("Use Tinderbox")) {
-                                SleepUtils.waitForItemSelect();
+                                InventoryUtils.waitForItemSelect();
                             }
                         } else {
                             System.out.println("No Tinderbox Found!");
@@ -60,7 +61,7 @@ public class ASFiremaking {
                     }
                 } else {
                     final RSTile startTile = Player.getPosition();
-                    SleepUtils.waitToMoveTile(startTile);
+                    WalkingUtils.waitToMoveTile(startTile);
                     if (!Player.getPosition().equals(startTile))
                         break;
                 }
@@ -70,10 +71,14 @@ public class ASFiremaking {
                     General.sleep(300, 600);
                 }
                 Walking.walkScreenPath(Walking.generateStraightScreenPath(nearestValidTile));
-                SleepUtils.waitToStopWalking();
+                WalkingUtils.waitToStopWalking();
             }
         }
     }
+
+    //endregion
+
+    //region TILE FINDING
 
     private static RSTile getNearestEmptyTile(RSTile inCentreTile){
         for (int i = 0; i < 10; i++){
@@ -115,4 +120,7 @@ public class ASFiremaking {
 
         return outputTileArray;
     }
+
+    //endregion
+
 }
