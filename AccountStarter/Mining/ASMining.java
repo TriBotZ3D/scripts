@@ -9,11 +9,8 @@ import org.tribot.api2007.ext.Filters;
 import org.tribot.api2007.types.RSItem;
 import scripts.AccountStarter.Banking.ASBanking;
 import scripts.AccountStarter.Variables.ASAreas;
-import scripts.AccountStarter.Variables.ASTiles;
 import scripts.AccountStarter.Variables.ASVariables;
-import scripts.Utils.InventoryUtils;
-import scripts.Utils.Misc;
-import scripts.Utils.SleepUtils;
+import scripts.Utils.*;
 
 /**
  * Created by James on 01/10/2016.
@@ -71,8 +68,8 @@ public class ASMining {
     private static void walkToMiningArea() {
         if (!ASAreas.getCombatArea().contains(Player.getPosition())) {
             if (Player.getPosition().getPlane() == 0) {
-                WebWalking.walkTo(Misc.getCentreTile(ASAreas.getMiningArea()));
-                SleepUtils.waitToStopWalking();
+                WebWalking.walkTo(MiscUtils.getCentreTile(ASAreas.getMiningArea()));
+                WalkingUtils.waitToStopWalking();
             } else {
                 ASBanking.leaveBank();
             }
@@ -166,7 +163,7 @@ public class ASMining {
             }
         }else{
             if (Banking.close())
-                SleepUtils.waitForBankToClose();
+                BankingUtils.waitForBankToClose();
         }
     }
 
